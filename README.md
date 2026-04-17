@@ -53,7 +53,7 @@ mvn allure:serve
 | **TestNG**         | 7.12.0  | Test framework and suite runner              |
 | **Allure**         | 2.33.0  | Test reporting with step-level detail        |
 | **Lombok**         | 1.18.44 | Boilerplate reduction (`@Data`, `@Slf4j`)    |
-| **Jackson**        | 2.20.1  | JSON serialization / deserialization         |
+| **Jackson**        | 2.21.2  | JSON serialization / deserialization         |
 | **OWNER**          | 1.0.12  | Property-file based configuration management |
 | **Hamcrest**       | 3.0     | Fluent assertion matchers                    |
 | **AspectJ Weaver** | 1.9.24  | AOP support for Allure `@Step` annotations   |
@@ -66,8 +66,8 @@ mvn allure:serve
 ```
 selenide-assured-clean/
 ├── core/          # Shared config, environments, base classes, models
-├── api/           # RestAssured-based API tests
-├── gui/           # Selenide-based UI tests
+├── api/           # RestAssured  API tests
+├── gui/           # Selenide  UI tests
 └── suites/        # TestNG suite XML files
 ```
 
