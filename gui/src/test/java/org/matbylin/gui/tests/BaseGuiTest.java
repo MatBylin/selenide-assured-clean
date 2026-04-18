@@ -53,7 +53,7 @@ public abstract class BaseGuiTest extends BaseTest {
         var baseUrl = EnvironmentConfigProvider.get().uiAppUrl();
         log.info("Opening application with baseUrl: {}", baseUrl);
         open(baseUrl);
-        dashboardPage = DashboardPage.getInstance();
+        dashboardPage = new DashboardPage();
     }
 
     private void configureAllureSelenide() {

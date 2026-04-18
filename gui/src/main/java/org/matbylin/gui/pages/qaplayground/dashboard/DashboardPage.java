@@ -34,8 +34,4 @@ public class DashboardPage extends BasePage<DashboardPage> {
         formsAutomationTile.getGoToButton().click();
         return new PracticeFormPage().shouldBeLoaded();
     }
-
-    public static DashboardPage getInstance() {
-        return new DashboardPage();
-    }
 }
