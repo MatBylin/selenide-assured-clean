@@ -43,8 +43,9 @@ public class Table extends BaseElement<Table> {
 
     public TableRow row(int rowIndexZeroBased) {
         log.info("Returning row with index {} from table: '{}'", rowIndexZeroBased, getElement());
-        rows().shouldHave(sizeGreaterThanOrEqual(rowIndexZeroBased + 1));
-        return new TableRow(rows().get(rowIndexZeroBased).shouldBe(visible));
+        var allRows = rows();
+        allRows.shouldHave(sizeGreaterThanOrEqual(rowIndexZeroBased + 1));
+        return new TableRow(allRows.get(rowIndexZeroBased).shouldBe(visible));
     }
 
     public TableCell cell(int rowIndexZeroBased, int columnIndexZeroBased) {
