@@ -33,8 +33,8 @@ Allure reporting, and TestNG.
 # 1. Clone and build (skips tests)
 mvn clean install -DskipTests
 
-# 2. Run the full SMOKE suite on the default (dev) environment
-mvn clean test -Dsuite=SMOKE
+# 2. Run the full SMOKE suite on the test environment in headless mode
+mvn clean test -Dsuite=SMOKE -Ptest,browser-headless
 
 # 3. View the Allure report
 mvn allure:serve
@@ -66,8 +66,8 @@ mvn allure:serve
 ```
 selenide-assured-clean/
 ├── core/          # Shared config, environments, base classes, models
-├── api/           # RestAssured  API tests
-├── gui/           # Selenide  UI tests
+├── api/           # RestAssured API tests
+├── gui/           # Selenide UI tests
 └── suites/        # TestNG suite XML files
 ```
 
@@ -167,7 +167,7 @@ Component (interface)
         └── CartItem
 ```
 
-A `Page` owns `Component`s or/and `Element`s; a `Component` owns `Element`s (and optionally nested `Component`s).
+A `Page` owns `Component`'s or/and `Elements`'s; a `Component` owns `Element`'s (and optionally nested `Component`'s).
 
 ### API layer
 
@@ -185,7 +185,6 @@ input (`UserInputDto`) and output (`UserOutputDto`, `UserCreatedDto`) to mirror 
 Both GUI and API layers use a validator pattern for assertions:
 
 ``` java
-// API
 ResponseValidator.validate(response)
     .hasStatusCode(201)
     .hasNonEmptyBody();
@@ -247,23 +246,23 @@ Individual keys can be overridden at runtime: `-Dapi.app.url=http://localhost:80
 | Profile | Purpose                               |
 |---------|---------------------------------------|
 | `dev`   | **Active by default.** Sets `env=dev` |
-| `test`  | Sets `env=test`.                      |
-| `stage` | Sets `env=stage`.                     |
+| `test`  | Sets `env=test`                       |
+| `stage` | Sets `env=stage`                      |
 
 ### Maven profiles — browser (`gui/pom.xml`)
 
 | Profile            | Effect                                        |
 |--------------------|-----------------------------------------------|
-| `browser-headless` | Sets `selenide.headless=true`.                |
+| `browser-headless` | Sets `selenide.headless=true`                 |
 | `browser-remote`   | Sets `selenide.remote` to a Selenium Grid URL |
 
 Additional Surefire system properties for **gui**:
 
-| Property            | Purpose                                    |
-|---------------------|--------------------------------------------|
-| `retry.count`       | Number of retry attempts for failed tests. |
-| `selenide.headless` | Run browser in headless mode.              |
-| `selenide.remote`   | Remote WebDriver / Grid URL.               |
+| Property            | Purpose                                   |
+|---------------------|-------------------------------------------|
+| `retry.count`       | Number of retry attempts for failed tests |
+| `selenide.headless` | Run browser in headless mode              |
+| `selenide.remote`   | Remote WebDriver / Grid URL               |
 
 ---
 
@@ -320,40 +319,30 @@ report. Add `@Step` to any public method in a Page, Component, or API service cl
 
 1. Create a class in `gui/src/main/java/.../pages/<feature>/` extending `BasePage<YourPage>`.
 2. Implement `validateLoaded()` (assert a unique element is visible) and `getPageTitle()`.
-3. Declare page elements as fields using the typed element wrappers (`Button`, `Input`, etc.).
+3. Declare page elements as fields using the typed element wrappers (`Text`, `Button`, etc.)
+4. Declare page components (optional)
 4. Return `self()` from every public action method.
 
-```java
-public class LoginPage extends BasePage<LoginPage> {
+``` java
+public class CartPage extends BasePage<CartPage> {
+    private static final String PAGE_TITLE = "Your Cart";
 
-    private final Input emailInput = new Input($("[data-test=email]"));
-    private final Input passwordInput = new Input($("[data-test=password]"));
-    private final Button submitButton = new Button($("[data-test=submit]"));
+    @Getter
+    private final Text pageTitle = new Text($(".title"));
+    private final TopBar topBar = new TopBar($(".header_container"));
+    private final Footer footer = new Footer($(".footer"));
+    private final CartItems cartItems = new CartItems($("#cart_contents_container"));
 
     @Override
+    @Step("Validating CartPage loaded")
     public void validateLoaded() {
-        submitButton.shouldBeVisible();
+        shouldHaveTitle(PAGE_TITLE);
+        topBar.shouldBeVisible();
+        cartItems.shouldBeVisible();
+        footer.shouldBeVisible();
     }
-
-    @Override
-    public String getPageTitle() {
-        return "Login";
-    }
-
-    public LoginPage enterEmail(String email) {
-        emailInput.setValue(email);
-        return self();
-    }
-
-    public LoginPage enterPassword(String password) {
-        passwordInput.setValue(password);
-        return self();
-    }
-
-    public DashboardPage submit() {
-        submitButton.click();
-        return new DashboardPage();
-    }
+    
+    //further methods
 }
 ```
 
@@ -361,14 +350,27 @@ public class LoginPage extends BasePage<LoginPage> {
 
 1. Create a class in `api/src/main/java/.../service/<resource>/` extending `BaseApi`.
 2. Add the endpoint to the `TargetApi` enum if it does not exist yet.
-3. Use `executor.get(...)` / `executor.post(...)` etc., wrapping results in `ApiResponse<T>`.
+3. Use `restExecutor.get(...)` / `restExecutor.post(...)` etc., wrapping results in `ApiResponse<T>`.
 
 ``` java
-public class ProductsApi extends BaseApi {
+public class UsersApi extends BaseApi {
 
-    public ApiResponse<ProductOutputDto> getProduct(int id) {
-        return executor.get(TargetApi.PRODUCTS, "/" + id, ProductOutputDto.class);
+    public UsersApi() {
+        super(new AuthProvider());
     }
+
+    @Step("GET user /users/{id}")
+    public ApiResponse<UserOutputDto> getUser(String id) {
+        var request = ApiRequest.builder()
+                .targetApi(TargetApi.SERVICE)
+                .pathParam("id", id)
+                .path("/users/{id}")
+                .build();
+
+        return restExecutor.get(request, UserOutputDto.class);
+    }
+    
+    // further implementation
 }
 ```
 
