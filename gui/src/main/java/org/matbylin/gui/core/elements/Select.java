@@ -23,8 +23,9 @@ public class Select extends BaseElement<Select> {
 
     public String getSelectedText() {
         log.info("Returning selected text from '{}'", getElement());
-        getSelectElement().shouldBe(visible);
-        return getSelectElement().getSelectedOptionText();
+        var select = getSelectElement();
+        select.shouldBe(visible);
+        return select.getSelectedOptionText();
     }
 
     public Select shouldHaveSelectedText(String expectedText) {
