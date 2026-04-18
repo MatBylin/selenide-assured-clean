@@ -14,7 +14,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <selenide-version>7.15.0</selenide-version>
+        <selenide-version>7.16.0</selenide-version>
         <allure-testng-version>2.33.0</allure-testng-version>
         <allure-selenide-version>2.33.0</allure-selenide-version>
         <allure-rest-assured-version>2.33.0</allure-rest-assured-version>
@@ -29,7 +29,7 @@
         <slf4j-api-version>2.0.17</slf4j-api-version>
         <aeonbits-owner-version>1.0.12</aeonbits-owner-version>
         <jackson-version>2.21.2</jackson-version>
-        <maven-surefire-plugin-version>3.5.4</maven-surefire-plugin-version>
+        <maven-surefire-plugin-version>3.5.5</maven-surefire-plugin-version>
         <allure.results.directory>${maven.multiModuleProjectDirectory}/target/allure-results</allure.results.directory>
     </properties>
 
