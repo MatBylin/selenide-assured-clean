@@ -2,7 +2,9 @@ package org.matbylin.core.test;
 
 import lombok.extern.slf4j.Slf4j;
 import org.matbylin.core.config.EnvironmentConfigProvider;
+import org.matbylin.core.faker.FakerProvider;
 import org.matbylin.core.listeners.execution.TestExecutionListener;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
 
@@ -13,6 +15,11 @@ public abstract class BaseTest {
     @BeforeSuite(alwaysRun = true)
     public void beforeAllTests() {
         logEnvironmentVariables();
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void cleanUpProviders() {
+        FakerProvider.remove();
     }
 
     private static void logEnvironmentVariables() {

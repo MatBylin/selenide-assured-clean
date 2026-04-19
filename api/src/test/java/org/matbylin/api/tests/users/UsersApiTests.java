@@ -1,7 +1,7 @@
 package org.matbylin.api.tests.users;
 
 import org.apache.http.HttpStatus;
-import org.matbylin.api.factory.user.UserInputDtoFactory;
+import org.matbylin.api.fixtures.user.UserInputDtoData;
 import org.matbylin.api.service.users.UsersApi;
 import org.matbylin.api.tests.BaseApiTest;
 import org.matbylin.api.validators.ResponseValidator;
@@ -22,7 +22,7 @@ public class UsersApiTests extends BaseApiTest {
 
     @Test
     void validateNewUserCreation() {
-        var userInput = UserInputDtoFactory.valid();
+        var userInput = UserInputDtoData.valid();
         var postResponse = new UsersApi().createUser(userInput);
 
         UserCreatedDtoValidator.validate(postResponse)

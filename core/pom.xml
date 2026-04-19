@@ -40,5 +40,9 @@
             <artifactId>testng</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
+        </dependency>
     </dependencies>
 </project>

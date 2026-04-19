@@ -60,6 +60,11 @@
             <artifactId>aspectjweaver</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
