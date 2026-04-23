@@ -3,7 +3,6 @@ package org.matbylin.gui.pages.cart;
 import io.qameta.allure.Step;
 import lombok.Getter;
 import org.matbylin.core.models.product.ProductModel;
-import org.matbylin.gui.capabilities.Openable;
 import org.matbylin.gui.core.components.generic.Footer;
 import org.matbylin.gui.core.components.generic.TopBar;
 import org.matbylin.gui.core.elements.Text;
@@ -12,7 +11,7 @@ import org.matbylin.gui.pages.cart.components.CartItems;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class CartPage extends BasePage<CartPage> implements Openable<CartPage> {
+public class CartPage extends BasePage<CartPage> {
     private static final String PAGE_TITLE = "Your Cart";
     private static final String URL = "/cart.html";
 
@@ -37,7 +36,6 @@ public class CartPage extends BasePage<CartPage> implements Openable<CartPage> {
         return this;
     }
 
-    @Override
     @Step("Opening CartPage url: " + URL)
     public CartPage openPage() {
         return openPage(URL);
