@@ -2,7 +2,7 @@ package org.matbylin.gui.validators.practiceform;
 
 import io.qameta.allure.Step;
 import org.matbylin.core.models.personalinfo.PersonalDetailsModel;
-import org.matbylin.gui.pages.qaplayground.practiceform.PracticeFormPage;
+import org.matbylin.gui.pages.qaplayground.forms.PracticeFormPage;
 
 public class PracticeFormValidator {
     private final PracticeFormPage page;
@@ -28,7 +28,7 @@ public class PracticeFormValidator {
     }
 
     @Step("Validating that form was not submitted - terms not accepted")
-    public PracticeFormValidator formSubmittedTermsNotAccepted(PersonalDetailsModel personalDetails) {
+    public PracticeFormValidator formSubmittedTermsNotAccepted() {
         page.getUserRegistrationForm().shouldBeVisible();
         page.getSubmittedForm().shouldBeNotVisible();
         page.getUserRegistrationForm().getTermErrorText().shouldHaveExactText("You must accept the terms.");

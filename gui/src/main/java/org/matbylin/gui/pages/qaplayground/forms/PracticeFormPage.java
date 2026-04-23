@@ -1,4 +1,4 @@
-package org.matbylin.gui.pages.qaplayground.practiceform;
+package org.matbylin.gui.pages.qaplayground.forms;
 
 import io.qameta.allure.Step;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import org.matbylin.gui.core.components.generic.Footer;
 import org.matbylin.gui.core.components.generic.TopBar;
 import org.matbylin.gui.core.elements.Text;
 import org.matbylin.gui.pages.BasePage;
-import org.matbylin.gui.pages.qaplayground.practiceform.components.SubmittedForm;
-import org.matbylin.gui.pages.qaplayground.practiceform.components.UserRegistrationForm;
+import org.matbylin.gui.pages.qaplayground.forms.components.SubmittedForm;
+import org.matbylin.gui.pages.qaplayground.forms.components.UserRegistrationForm;
 
 import static com.codeborne.selenide.Selenide.$;
 

@@ -7,7 +7,8 @@ import org.matbylin.gui.core.components.generic.TopBar;
 import org.matbylin.gui.core.elements.Text;
 import org.matbylin.gui.pages.BasePage;
 import org.matbylin.gui.pages.qaplayground.dashboard.components.Tile;
-import org.matbylin.gui.pages.qaplayground.practiceform.PracticeFormPage;
+import org.matbylin.gui.pages.qaplayground.datatable.DataTablePage;
+import org.matbylin.gui.pages.qaplayground.forms.PracticeFormPage;
 
 import static com.codeborne.selenide.Selenide.$;
 
@@ -19,6 +20,7 @@ public class DashboardPage extends BasePage<DashboardPage> {
     private final TopBar topBar = new TopBar($("header"));
     private final Footer footer = new Footer($("footer"));
     private final Tile formsAutomationTile = new Tile($("#card-link-forms"));
+    private final Tile tableAutomationTile = new Tile($("#card-link-data-table"));
 
     @Override
     @Step("Validating Dashboard page loaded")
@@ -29,9 +31,15 @@ public class DashboardPage extends BasePage<DashboardPage> {
         shouldHaveTitle(PAGE_TITLE);
     }
 
-    @Step("Going to Form Automation page")
-    public PracticeFormPage goToFormAutomation() {
+    @Step("Going to Practice Form page")
+    public PracticeFormPage goToPracticeFormPage() {
         formsAutomationTile.getGoToButton().click();
         return new PracticeFormPage().shouldBeLoaded();
+    }
+
+    @Step("Going to Data Table page")
+    public DataTablePage goToDataTablePage() {
+        tableAutomationTile.getGoToButton().click();
+        return new DataTablePage().shouldBeLoaded();
     }
 }

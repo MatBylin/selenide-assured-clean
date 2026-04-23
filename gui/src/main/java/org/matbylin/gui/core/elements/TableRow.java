@@ -15,6 +15,22 @@ public class TableRow extends BaseElement<TableRow> {
         super(element);
     }
 
+    private ElementsCollection getCells() {
+        shouldBeVisible();
+        return getElement().$$(":scope td, :scope th");
+    }
+
+    public TableCell getCell(int columnIndex) {
+        log.info("Returning cell with column index {} from row: '{}'", columnIndex, getElement());
+        getCells().shouldHave(sizeGreaterThanOrEqual(columnIndex + 1));
+        return new TableCell(getCells().get(columnIndex).shouldBe(visible));
+    }
+
+    public String getCellText(int columnIndex) {
+        log.info("Returning cell text with column index {} from row: '{}'", columnIndex, getElement());
+        return getCell(columnIndex).getText();
+    }
+
     public String getText() {
         log.info("Returning text from element '{}'", getElement());
         waitForReadyState();
@@ -34,21 +50,5 @@ public class TableRow extends BaseElement<TableRow> {
         getElement().shouldBe(visible);
         getElement().shouldHave(exactText(expectedText));
         return self();
-    }
-
-    public TableCell cell(int columnIndexZeroBased) {
-        log.info("Returning cell with column index {} from row: '{}'", columnIndexZeroBased, getElement());
-        cells().shouldHave(sizeGreaterThanOrEqual(columnIndexZeroBased + 1));
-        return new TableCell(cells().get(columnIndexZeroBased).shouldBe(visible));
-    }
-
-    public String getCellText(int columnIndexZeroBased) {
-        log.info("Returning cell text with column index {} from row: '{}'", columnIndexZeroBased, getElement());
-        return cell(columnIndexZeroBased).getText();
-    }
-
-    private ElementsCollection cells() {
-        shouldBeVisible();
-        return getElement().$$(":scope td, :scope th");
     }
 }

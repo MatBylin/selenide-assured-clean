@@ -9,7 +9,7 @@ import org.matbylin.gui.tests.BaseGuiTest;
 import org.matbylin.gui.validators.practiceform.PracticeFormValidator;
 import org.testng.annotations.Test;
 
-@Story("Form Automation Practice")
+@Story("Practice Form")
 public class PracticeFormTests extends BaseGuiTest {
     @Test(groups = {Tag.SMOKE})
     void validateAutomationFormFilledSuccessfully() {
@@ -18,7 +18,7 @@ public class PracticeFormTests extends BaseGuiTest {
         var accountDetails = AccountDetailsData.valid();
 
         var practiceFormPage = dashboardPage
-                .goToFormAutomation()
+                .goToPracticeFormPage()
                 .fillPersonalDetails(personalDetails)
                 .fillAddressDetails(addressDetails)
                 .fillAccountDetails(accountDetails)
@@ -35,13 +35,13 @@ public class PracticeFormTests extends BaseGuiTest {
         var accountDetails = AccountDetailsData.termsNotAgreed();
 
         var practiceFormPage = dashboardPage
-                .goToFormAutomation()
+                .goToPracticeFormPage()
                 .fillPersonalDetails(personalDetails)
                 .fillAddressDetails(addressDetails)
                 .fillAccountDetails(accountDetails)
                 .submitForm();
 
         PracticeFormValidator.assertThat(practiceFormPage)
-                .formSubmittedTermsNotAccepted(personalDetails);
+                .formSubmittedTermsNotAccepted();
     }
 }

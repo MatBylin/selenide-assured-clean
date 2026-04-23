@@ -1,4 +1,4 @@
-package org.matbylin.gui.pages.qaplayground.practiceform.components;
+package org.matbylin.gui.pages.qaplayground.forms.components;
 
 import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;

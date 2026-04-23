@@ -1,4 +1,4 @@
-package org.matbylin.gui.pages.qaplayground.practiceform.components;
+package org.matbylin.gui.pages.qaplayground.forms.components;
 
 import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import org.matbylin.core.models.personalinfo.AddressDetailsModel;
 import org.matbylin.core.models.personalinfo.PersonalDetailsModel;
 import org.matbylin.gui.core.components.base.BaseComponent;
 import org.matbylin.gui.core.elements.*;
-import org.matbylin.gui.pages.qaplayground.practiceform.PracticeFormPage;
+import org.matbylin.gui.pages.qaplayground.forms.PracticeFormPage;
 
 import static com.codeborne.selenide.Condition.disappear;
 
