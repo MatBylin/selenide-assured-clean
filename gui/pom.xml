@@ -15,6 +15,7 @@
 
     <properties>
         <retry.count>0</retry.count>
+        <wait.spinner.selector>.spinner</wait.spinner.selector>
     </properties>
 
     <dependencies>
@@ -78,6 +79,7 @@
                         <selenide.headless>${selenide.headless}</selenide.headless>
                         <!--suppress UnresolvedMavenProperty -->
                         <selenide.remote>${selenide.remote}</selenide.remote>
+                        <wait.spinner.selector>${wait.spinner.selector}</wait.spinner.selector>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

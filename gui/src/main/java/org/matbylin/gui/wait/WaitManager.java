@@ -1,5 +1,6 @@
 package org.matbylin.gui.wait;
 
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.SelenideWait;
 import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.By;
@@ -10,12 +11,14 @@ import java.util.Objects;
 
 public class WaitManager {
 
-    private static final By SPINNER = By.cssSelector(".spinner");
+    private static final By SPINNER = By.cssSelector(
+            System.getProperty("wait.spinner.selector", ".spinner")
+    );
 
     private final SelenideWait wait;
 
     public WaitManager() {
-        this.wait = new SelenideWait(WebDriverRunner.getWebDriver(), 15000, 200);
+        this.wait = new SelenideWait(WebDriverRunner.getWebDriver(), Configuration.timeout, Configuration.pollingInterval);
     }
 
     public WaitManager(long timeout, long pollingInterval) {
