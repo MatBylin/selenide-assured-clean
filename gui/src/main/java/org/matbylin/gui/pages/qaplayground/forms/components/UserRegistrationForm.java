@@ -19,7 +19,7 @@ public class UserRegistrationForm extends BaseComponent<UserRegistrationForm> {
     private final Input emailInput = new Input($("#email"));
     private final Input phoneInput = new Input($("#phone"));
     private final Input dateOfBirthInput = new Input($("#dob"));
-    private final RadioButton genderRadioButton = new RadioButton($("#genderGroup"));
+    private final RadioGroup genderRadioGroup = new RadioGroup($("#genderGroup"));
     private final Select countrySelect = new Select($("#country"));
     private final Input cityInput = new Input($("#city"));
     private final Input passwordInput = new Input($("#password"));
@@ -38,7 +38,7 @@ public class UserRegistrationForm extends BaseComponent<UserRegistrationForm> {
         emailInput.setValue(personalDetailsModel.getEmail());
         phoneInput.setValue(personalDetailsModel.getPhone());
         dateOfBirthInput.setValue(personalDetailsModel.getDateOfBirth());
-        genderRadioButton.select(personalDetailsModel.getGender().getValue());
+        genderRadioGroup.select(personalDetailsModel.getGender().getValue());
         return this;
     }
 

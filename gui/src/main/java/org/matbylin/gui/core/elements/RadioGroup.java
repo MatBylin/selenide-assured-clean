@@ -8,13 +8,13 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 
 @Slf4j
-public class RadioButton extends BaseElement<RadioButton> {
+public class RadioGroup extends BaseElement<RadioGroup> {
 
-    public RadioButton(SelenideElement element) {
+    public RadioGroup(SelenideElement element) {
         super(element);
     }
 
-    public RadioButton select(String option) {
+    public RadioGroup select(String option) {
         log.info("Selecting option '{}' in radio group '{}'", option, getElement());
         waitForReadyState();
         getElement().shouldBe(visible);
@@ -32,7 +32,7 @@ public class RadioButton extends BaseElement<RadioButton> {
         return getElement().$(byText(option)).shouldBe(visible).isSelected();
     }
 
-    public RadioButton shouldBeSelected(String option) {
+    public RadioGroup shouldBeSelected(String option) {
         log.info("Checking that option '{}' is selected in radio group '{}'", option, getElement());
         if (!isSelected(option)) {
             throw new AssertionError("Expected option '%s' to be selected".formatted(option));
@@ -40,7 +40,7 @@ public class RadioButton extends BaseElement<RadioButton> {
         return self();
     }
 
-    public RadioButton shouldNotBeSelected(String option) {
+    public RadioGroup shouldNotBeSelected(String option) {
         log.info("Checking that option '{}' is not selected in radio group '{}'", option, getElement());
         if (isSelected(option)) {
             throw new AssertionError("Expected option '%s' not to be selected".formatted(option));
