@@ -15,8 +15,7 @@ public class Button extends BaseElement<Button> {
 
     public Button click() {
         log.info("Clicking into '{}'", getElement());
-        waitForReadyState();
-        getElement().shouldBe(visible, enabled, clickable);
+        getElement().shouldBe(clickable);
         getElement().click();
         waitForReadyState();
         return self();
