@@ -42,6 +42,7 @@ public class RestExecutor implements ApiExecutor {
     @Override
     public <T> ApiResponse<T> put(ApiRequest request, Class<T> responseType) {
         var response = givenRequest(request)
+                .body(request.getBody())
                 .when()
                 .put(request.getPath());
 
