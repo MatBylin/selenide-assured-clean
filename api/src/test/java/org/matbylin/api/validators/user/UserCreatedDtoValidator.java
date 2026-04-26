@@ -26,7 +26,7 @@ public class UserCreatedDtoValidator extends Validator<UserCreatedDtoValidator> 
     }
 
     @Step("Validating created user has expected data")
-    public UserCreatedDtoValidator hasExpectedName(UserInputDto userInputDto) {
+    public UserCreatedDtoValidator hasExpectedInputData(UserInputDto userInputDto) {
         log.info("Validating UserCreatedDto has expected -> userInputDto {}", userInputDto);
         assertThat(response.getBody().getName(), equalTo(userInputDto.getName()));
         assertThat(response.getBody().getJob(), equalTo(userInputDto.getJob()));

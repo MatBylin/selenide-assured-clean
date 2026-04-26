@@ -27,7 +27,7 @@ public class UsersApiTests extends BaseApiTest {
 
         UserCreatedDtoValidator.validate(postResponse)
                 .hasStatusCode(HttpStatus.SC_CREATED)
-                .hasExpectedName(userInput);
+                .hasExpectedInputData(userInput);
     }
 
     @Test

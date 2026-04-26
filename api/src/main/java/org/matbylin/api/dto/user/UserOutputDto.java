@@ -1,5 +1,6 @@
 package org.matbylin.api.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
 
@@ -13,8 +14,10 @@ public class UserOutputDto {
     public static class Data {
         public int id;
         public String email;
-        public String first_name;
-        public String last_name;
+        @JsonProperty("first_name")
+        public String firstName;
+        @JsonProperty("last_name")
+        public String lastName;
         public String avatar;
     }
 
@@ -26,10 +29,14 @@ public class UserOutputDto {
 
     @Getter
     public static class Meta {
-        public String powered_by;
-        public String docs_url;
-        public String upgrade_url;
-        public String example_url;
+        @JsonProperty("powered_by")
+        public String poweredBy;
+        @JsonProperty("docs_url")
+        public String docsUrl;
+        @JsonProperty("upgrade_url")
+        public String upgradeUrl;
+        @JsonProperty("example_url")
+        public String exampleUrl;
         public String variant;
         public String message;
         public Object cta;

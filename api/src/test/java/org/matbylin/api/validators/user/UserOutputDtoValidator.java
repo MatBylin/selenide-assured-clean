@@ -26,8 +26,8 @@ public class UserOutputDtoValidator extends Validator<UserOutputDtoValidator> {
     @Step("Validating user has expected data")
     public UserOutputDtoValidator hasExpectedName(String firstName, String lastName) {
         log.info("Validating UserOutputDto has expected: firstName:{}, lastName: {}", firstName, lastName);
-        assertThat(response.getBody().getData().getFirst_name(), equalTo(firstName));
-        assertThat(response.getBody().getData().getLast_name(), equalTo(lastName));
+        assertThat(response.getBody().getData().getFirstName(), equalTo(firstName));
+        assertThat(response.getBody().getData().getLastName(), equalTo(lastName));
         return this;
     }
 }
