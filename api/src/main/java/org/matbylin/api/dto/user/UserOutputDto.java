@@ -8,7 +8,8 @@ import lombok.Getter;
 public class UserOutputDto {
     private Data data;
     private Support support;
-    private Meta _meta;
+    @JsonProperty("_meta")
+    private Meta meta;
 
     @Getter
     public static class Data {
