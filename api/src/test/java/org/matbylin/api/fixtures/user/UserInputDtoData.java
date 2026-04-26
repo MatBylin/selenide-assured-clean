@@ -1,18 +1,16 @@
 package org.matbylin.api.fixtures.user;
 
 import lombok.experimental.UtilityClass;
-import net.datafaker.Faker;
 import org.matbylin.api.dto.user.UserInputDto;
-import org.matbylin.core.faker.FakerProvider;
+import org.matbylin.api.fixtures.BaseDtoData;
 
 @UtilityClass
-public class UserInputDtoData {
-    private static final Faker FAKER = FakerProvider.get();
+public class UserInputDtoData extends BaseDtoData {
 
     public static UserInputDto valid() {
         return UserInputDto.builder()
-                .job(FAKER.job().position())
-                .name(FAKER.name().fullName())
+                .job(getFaker().job().position())
+                .name(getFaker().name().fullName())
                 .build();
     }
 }
