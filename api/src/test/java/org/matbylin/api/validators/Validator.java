@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.matbylin.api.core.ApiResponse;
 import org.matbylin.api.validators.user.UserOutputDtoValidator;
 
-import java.util.Objects;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -43,7 +41,7 @@ public abstract class Validator<T extends Validator<T>> {
     public T hasEmptyBody() {
         log.info("Validating raw body is blank and deserialized body is null");
         var raw = apiResponse.getRawBody();
-        assertThat("Raw body should be blank", Objects.isNull(raw) || raw.isBlank());
+        assertThat("Raw body should be blank", raw, anyOf(nullValue(), emptyOrNullString()));
         assertThat("Deserialized body should be null", apiResponse.getBody(), nullValue());
         return self();
     }
