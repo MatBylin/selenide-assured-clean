@@ -14,24 +14,21 @@ public class Select extends BaseElement<Select> {
     }
 
     public Select selectByText(String optionText) {
-        log.info("Selecting option by text '{}' in '{}'", optionText, getElement());
+        log.info("Selecting option by text '{}' in select '{}'", optionText, getElement());
         waitForReadyState();
         getSelectElement().selectOption(optionText);
-        waitForReadyState();
         return self();
     }
 
     public String getSelectedText() {
-        log.info("Returning selected text from '{}'", getElement());
-        var select = getSelectElement();
-        select.shouldBe(visible);
-        return select.getSelectedOptionText();
+        log.info("Returning selected text from select '{}'", getElement());
+        waitForReadyState();
+        return getSelectElement().getSelectedOptionText();
     }
 
     public Select shouldHaveSelectedText(String expectedText) {
-        log.info("Checking that '{}' has selected text '{}'", getElement(), expectedText);
-        getElement().shouldBe(visible);
-        getSelectElement().shouldBe(visible).shouldHave(selectedText(expectedText));
+        log.info("Checking that select '{}' has selected text '{}'", getElement(), expectedText);
+        getSelectElement().shouldHave(selectedText(expectedText));
         return self();
     }
 

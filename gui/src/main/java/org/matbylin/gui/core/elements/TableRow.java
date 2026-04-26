@@ -15,40 +15,38 @@ public class TableRow extends BaseElement<TableRow> {
         super(element);
     }
 
-    private ElementsCollection getCells() {
-        shouldBeVisible();
-        return getElement().$$(":scope td, :scope th");
-    }
-
     public TableCell getCell(int columnIndex) {
-        log.info("Returning cell with column index {} from row: '{}'", columnIndex, getElement());
-        getCells().shouldHave(sizeGreaterThanOrEqual(columnIndex + 1));
-        return new TableCell(getCells().get(columnIndex).shouldBe(visible));
+        log.info("Returning cell with column index {} from table row: '{}'", columnIndex, getElement());
+        var allCells = getCells();
+        allCells.shouldHave(sizeGreaterThanOrEqual(columnIndex + 1));
+        return new TableCell(allCells.get(columnIndex).shouldBe(visible));
     }
 
     public String getCellText(int columnIndex) {
-        log.info("Returning cell text with column index {} from row: '{}'", columnIndex, getElement());
+        log.info("Returning cell text with column index {} from table row: '{}'", columnIndex, getElement());
         return getCell(columnIndex).getText();
     }
 
     public String getText() {
-        log.info("Returning text from element '{}'", getElement());
+        log.info("Returning text from table row '{}'", getElement());
         waitForReadyState();
-        getElement().shouldBe(visible);
-        return getElement().getText();
+        return getElement().shouldBe(visible).getText();
     }
 
     public TableRow shouldContainText(String expectedPart) {
-        log.info("Checking that element '{}' contains text '{}'", getElement(), expectedPart);
-        getElement().shouldBe(visible);
-        getElement().shouldHave(text(expectedPart));
+        log.info("Checking that table row '{}' contains text '{}'", getElement(), expectedPart);
+        getElement().shouldBe(visible).shouldHave(text(expectedPart));
         return self();
     }
 
     public TableRow shouldHaveExactText(String expectedText) {
-        log.info("Checking that element '{}' has exact text '{}'", getElement(), expectedText);
-        getElement().shouldBe(visible);
-        getElement().shouldHave(exactText(expectedText));
+        log.info("Checking that table row '{}' has exact text '{}'", getElement(), expectedText);
+        getElement().shouldBe(visible).shouldHave(exactText(expectedText));
         return self();
+    }
+
+    private ElementsCollection getCells() {
+        waitForReadyState();
+        return getElement().shouldBe(visible).$$(":scope td, :scope th");
     }
 }

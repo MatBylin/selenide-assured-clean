@@ -41,8 +41,7 @@ public class Checkbox extends BaseElement<Checkbox> {
 
     public boolean isChecked() {
         log.info("Returning checked state for checkbox '{}'", getElement());
-        getElement().shouldBe(visible);
-        return getElement().isSelected();
+        return getElement().shouldBe(visible).isSelected();
     }
 
     public Checkbox shouldBeChecked() {
@@ -53,8 +52,7 @@ public class Checkbox extends BaseElement<Checkbox> {
 
     public Checkbox shouldBeUnchecked() {
         log.info("Checking that checkbox '{}' is unchecked", getElement());
-        getElement().shouldBe(visible);
-        getElement().shouldNotBe(selected);
+        getElement().shouldBe(visible).shouldNotBe(selected);
         return self();
     }
 }

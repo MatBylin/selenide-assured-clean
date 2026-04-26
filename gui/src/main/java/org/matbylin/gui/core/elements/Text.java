@@ -14,30 +14,26 @@ public class Text extends BaseElement<Text> {
     }
 
     public String getText() {
-        log.info("Returning text from element '{}'", getElement());
+        log.info("Returning text from '{}'", getElement());
         waitForReadyState();
-        getElement().shouldBe(visible);
-        return getElement().getText();
+        return getElement().shouldBe(visible).getText();
     }
 
     public Text shouldContainText(String expectedPart) {
-        log.info("Checking that element '{}' contains text '{}'", getElement(), expectedPart);
-        getElement().shouldBe(visible);
-        getElement().shouldHave(text(expectedPart));
+        log.info("Checking that '{}' contains text '{}'", getElement(), expectedPart);
+        getElement().shouldBe(visible).shouldHave(text(expectedPart));
         return self();
     }
 
     public Text shouldNotContainText(String expectedPart) {
-        log.info("Checking that element '{}' not contains text '{}'", getElement(), expectedPart);
-        getElement().shouldBe(visible);
-        getElement().shouldNotHave(text(expectedPart));
+        log.info("Checking that '{}' not contains text '{}'", getElement(), expectedPart);
+        getElement().shouldBe(visible).shouldNotHave(text(expectedPart));
         return self();
     }
 
     public Text shouldHaveExactText(String expectedText) {
-        log.info("Checking that element '{}' has exact text '{}'", getElement(), expectedText);
-        getElement().shouldBe(visible);
-        getElement().shouldHave(exactText(expectedText));
+        log.info("Checking that '{}' has exact text '{}'", getElement(), expectedText);
+        getElement().shouldBe(visible).shouldHave(exactText(expectedText));
         return self();
     }
 }

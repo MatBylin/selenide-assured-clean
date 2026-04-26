@@ -4,6 +4,7 @@ import com.codeborne.selenide.SelenideElement;
 import lombok.extern.slf4j.Slf4j;
 import org.matbylin.gui.core.elements.base.BaseElement;
 
+import static com.codeborne.selenide.Condition.selected;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 
@@ -34,17 +35,13 @@ public class RadioGroup extends BaseElement<RadioGroup> {
 
     public RadioGroup shouldBeSelected(String option) {
         log.info("Checking that option '{}' is selected in radio group '{}'", option, getElement());
-        if (!isSelected(option)) {
-            throw new AssertionError("Expected option '%s' to be selected".formatted(option));
-        }
+        getElement().$(byText(option)).shouldBe(visible, selected);
         return self();
     }
 
     public RadioGroup shouldNotBeSelected(String option) {
         log.info("Checking that option '{}' is not selected in radio group '{}'", option, getElement());
-        if (isSelected(option)) {
-            throw new AssertionError("Expected option '%s' not to be selected".formatted(option));
-        }
+        getElement().$(byText(option)).shouldBe(visible).shouldNotBe(selected);
         return self();
     }
 }

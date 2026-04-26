@@ -14,7 +14,7 @@ public class TableCell extends BaseElement<TableCell> {
     }
 
     public String getText() {
-        log.info("Returning text from element '{}'", getElement());
+        log.info("Returning text from table cell '{}'", getElement());
         waitForReadyState();
         return getElement().shouldBe(visible).getText();
     }

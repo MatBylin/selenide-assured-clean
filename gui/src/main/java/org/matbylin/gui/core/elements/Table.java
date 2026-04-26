@@ -17,8 +17,9 @@ public class Table extends BaseElement<Table> {
     }
 
     public ElementsCollection getTableHeaders() {
-        shouldBeVisible();
-        var tableHeaders = getElement().$$x("./thead//th");
+        log.info("Returning table headers from table: '{}'", getElement());
+        waitForReadyState();
+        var tableHeaders = getElement().shouldBe(visible).$$x("./thead//th");
         if (!tableHeaders.isEmpty()) {
             return tableHeaders;
         }
@@ -26,8 +27,9 @@ public class Table extends BaseElement<Table> {
     }
 
     public ElementsCollection getRows() {
-        shouldBeVisible();
-        var bodyRows = getElement().$$x("./tbody/tr");
+        log.info("Returning rows from table: '{}'", getElement());
+        waitForReadyState();
+        var bodyRows = getElement().shouldBe(visible).$$x("./tbody/tr");
         if (!bodyRows.isEmpty()) {
             return bodyRows;
         }
