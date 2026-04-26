@@ -34,7 +34,7 @@ public abstract class Validator<T extends Validator<T>> {
     public T hasBody() {
         log.info("Validating response has no empty body");
         var raw = apiResponse.getRawBody();
-        assertThat("Raw body should be non null", Objects.nonNull(raw));
+        assertThat("Raw body should be non null", raw, notNullValue());
         assertThat("Deserialized body should be non null", apiResponse.getBody(), notNullValue());
         return self();
     }
