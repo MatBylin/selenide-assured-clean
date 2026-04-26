@@ -15,6 +15,9 @@ public interface EnvironmentConfig extends Config {
     @Key("api.app.url")
     String apiAppUrl();
 
+    @Key("api.app.token")
+    String apiAppToken();
+
     @Key("ui.app.url")
     String uiAppUrl();
 }
