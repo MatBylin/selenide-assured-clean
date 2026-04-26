@@ -11,10 +11,10 @@ import org.matbylin.gui.pages.qaplayground.datatable.DataTablePage;
 import org.matbylin.gui.pages.qaplayground.forms.PracticeFormPage;
 
 import static com.codeborne.selenide.Selenide.$;
+
 @Getter
 public class DashboardPage extends BasePage<DashboardPage> {
     private static final String PAGE_TITLE = "Ready to be a Pro AI Automation Engineer?";
-
 
     private final Text pageTitle = new Text($("[class='page-title py-4'] h1"));
     private final TopBar topBar = new TopBar($("header"));
