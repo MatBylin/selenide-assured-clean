@@ -14,7 +14,7 @@ public abstract class BasePage<T extends BasePage<T>> {
 
     public T shouldBeLoaded() {
         log.info("Validating page loaded: {}", this.getClass().getSimpleName());
-        new WaitManager().waitForPageReady();
+        WaitManager.waitForPageReady();
         validateLoaded();
         return self();
     }
@@ -30,7 +30,7 @@ public abstract class BasePage<T extends BasePage<T>> {
     }
 
     @SuppressWarnings("unchecked")
-    T self() {
+    protected T self() {
         return (T) this;
     }
 }

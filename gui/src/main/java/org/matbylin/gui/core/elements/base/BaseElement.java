@@ -12,11 +12,9 @@ import static com.codeborne.selenide.Condition.visible;
 public abstract class BaseElement<T extends BaseElement<T>> implements Element<T> {
 
     private final SelenideElement element;
-    private final WaitManager waitManager;
 
     protected BaseElement(SelenideElement element) {
         this.element = element;
-        this.waitManager = new WaitManager();
     }
 
     @Override
@@ -59,6 +57,6 @@ public abstract class BaseElement<T extends BaseElement<T>> implements Element<T
     }
 
     public void waitForReadyState() {
-        waitManager.waitForPageReady();
+        WaitManager.waitForPageReady();
     }
 }
