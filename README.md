@@ -33,8 +33,8 @@ Allure reporting, and TestNG.
 # 1. Clone and build (skips tests)
 mvn clean install -DskipTests
 
-# 2. Run the full SMOKE suite on the test environment in headless mode
-mvn clean test -Dsuite=SMOKE -Ptest,browser-headless
+# 2. Run the full SMOKE GUI suite on the test environment in headless mode
+mvn clean test -Dsuite=SMOKE_GUI -Ptest,browser-headless
 
 # 3. View the Allure report
 mvn allure:serve
@@ -48,8 +48,8 @@ mvn allure:serve
 |--------------------|---------|----------------------------------------------|
 | **JDK**            | 21      | Java runtime                                 |
 | **Maven**          | 3.x     | Build and dependency management              |
-| **Selenide**       | 7.15.0  | UI automation wrapper over Selenium          |
-| **RestAssured**    | 5.5.6   | API testing library                          |
+| **Selenide**       | 7.16.0  | UI automation wrapper over Selenium          |
+| **RestAssured**    | 6.0.0   | API testing library                          |
 | **TestNG**         | 7.12.0  | Test framework and suite runner              |
 | **Allure**         | 2.33.0  | Test reporting with step-level detail        |
 | **Lombok**         | 1.18.44 | Boilerplate reduction (`@Data`, `@Slf4j`)    |
@@ -58,6 +58,7 @@ mvn allure:serve
 | **Hamcrest**       | 3.0     | Fluent assertion matchers                    |
 | **AspectJ Weaver** | 1.9.24  | AOP support for Allure `@Step` annotations   |
 | **SLF4J**          | 2.0.17  | Logging facade (SimpleLogger backend)        |
+| **Pdfbox**         | 3.0.7   | Pdf reader                                   |
 
 ---
 
@@ -91,10 +92,13 @@ selenide-assured-clean/
 ```
 core/
 ├── config/           # OWNER-based environment config (EnvironmentConfig, EnvironmentConfigProvider)
+├── faker/            # Faker library global provider
+├── groups/           # Test groups/tags
 ├── listeners/
 │   ├── execution/    # TestExecutionListener — logs test lifecycle events
 │   └── retry/        # RetryAnalyzer + RetryTransformer — configurable test retry
 ├── models/           # Shared data models
+├── pdf/              # Pdf filer reader
 └── test/             # BaseTest — common @BeforeMethod / @AfterMethod hooks
 
 gui/
@@ -186,7 +190,7 @@ Both GUI and API layers use a validator pattern for assertions:
 
 ``` java
 ResponseValidator.validate(response)
-    .hasStatusCode(201)
+    .hasStatusCode(HttpStatus.SC_CREATED)
     .hasNonEmptyBody();
 
 UserCreatedDtoValidator.validate(response)
@@ -277,20 +281,18 @@ suites/xml/${suite}.xml
 The `-Dsuite` flag is **required** and must match the file name without the `.xml` extension.
 
 ```bash
-# SMOKE suite, default dev environment
-mvn clean test -Dsuite=SMOKE
+# SMOKE GUI suite, default dev environment
+mvn clean test -Dsuite=SMOKE_GUI
 
-# SMOKE suite on the test environment, headless browser
-mvn clean test -Dsuite=SMOKE -Ptest,browser-headless
+# SMOKE GUI suite on the test environment, headless browser
+mvn clean test -Dsuite=SMOKE_GUI -Ptest,browser-headless
 
-# SMOKE suite on stage, headless, with 2 retries on failure
-mvn clean test -Dsuite=SMOKE -Pstage,browser-headless -Dretry.count=2
+# SMOKE GUI suite on stage, headless, with 2 retries on failure
+mvn clean test -Dsuite=SMOKE_GUI -Pstage,browser-headless -Dretry.count=2
 
 # API tests only, test environment
-mvn clean test -pl api -Dsuite=SMOKE -Ptest
+mvn clean test -pl api -Dsuite=SMOKE_API -Ptest
 
-# GUI tests only, remote Selenium Grid
-mvn clean test -pl gui -Dsuite=SMOKE -Pbrowser-remote
 ```
 
 ---
@@ -301,7 +303,7 @@ Allure results are written to `target/allure-results` at the repository root (co
 
 ```bash
 # Run tests and immediately open the HTML report in a browser
-mvn clean test -Dsuite=SMOKE && mvn allure:serve
+mvn clean test -Dsuite=SMOKE_GUI && mvn allure:serve
 
 # Generate a static HTML report without serving
 mvn allure:report
@@ -342,7 +344,7 @@ public class CartPage extends BasePage<CartPage> {
         footer.shouldBeVisible();
     }
     
-    //further methods
+    //further implementation
 }
 ```
 
