@@ -64,6 +64,10 @@
             <artifactId>datafaker</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -89,7 +93,7 @@
         <profile>
             <id>browser-remote</id>
             <properties>
-                <selenide.remote>https://grid.url:4444/wd/hub</selenide.remote>
+                <selenide.remote>http://localhost:4444/wd/hub</selenide.remote>
             </properties>
         </profile>
         <profile>

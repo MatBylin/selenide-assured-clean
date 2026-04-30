@@ -31,6 +31,7 @@
         <jackson-version>2.21.2</jackson-version>
         <datafaker-version>2.5.4</datafaker-version>
         <maven-surefire-plugin-version>3.5.5</maven-surefire-plugin-version>
+        <pdfbox-version>3.0.7</pdfbox-version>
         <allure.results.directory>${maven.multiModuleProjectDirectory}/target/allure-results</allure.results.directory>
     </properties>
 
@@ -122,6 +123,11 @@
                 <groupId>net.datafaker</groupId>
                 <artifactId>datafaker</artifactId>
                 <version>${datafaker-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${pdfbox-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

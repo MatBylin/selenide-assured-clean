@@ -4,6 +4,8 @@ import com.codeborne.selenide.SelenideElement;
 import lombok.extern.slf4j.Slf4j;
 import org.matbylin.gui.core.elements.base.BaseElement;
 
+import java.io.File;
+
 import static com.codeborne.selenide.Condition.*;
 
 @Slf4j
@@ -18,6 +20,12 @@ public class Button extends BaseElement<Button> {
         waitForReadyState();
         getElement().shouldBe(clickable).click();
         return self();
+    }
+
+    public File download() {
+        log.info("Downloading file from '{}'", getElement());
+        waitForReadyState();
+        return getElement().download();
     }
 
     public String getText() {
