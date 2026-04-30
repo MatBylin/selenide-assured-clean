@@ -8,6 +8,7 @@ import org.matbylin.gui.core.elements.Text;
 import org.matbylin.gui.pages.BasePage;
 import org.matbylin.gui.pages.qaplayground.dashboard.components.Tile;
 import org.matbylin.gui.pages.qaplayground.datatable.DataTablePage;
+import org.matbylin.gui.pages.qaplayground.filedownload.FileDownloadPage;
 import org.matbylin.gui.pages.qaplayground.forms.PracticeFormPage;
 
 import static com.codeborne.selenide.Selenide.$;
@@ -21,9 +22,10 @@ public class DashboardPage extends BasePage<DashboardPage> {
     private final Footer footer = new Footer($("footer"));
     private final Tile formsAutomationTile = new Tile($("#card-link-forms"));
     private final Tile tableAutomationTile = new Tile($("#card-link-data-table"));
+    private final Tile fileDownloadAutomationTile = new Tile($("#card-link-file-upload"));
 
     @Override
-    @Step("Validating Dashboard page loaded")
+    @Step("Validating 'Dashboard' page loaded")
     public void validateLoaded() {
         pageTitle.shouldBeVisible();
         topBar.shouldBeVisible();
@@ -31,15 +33,21 @@ public class DashboardPage extends BasePage<DashboardPage> {
         shouldHaveTitle(PAGE_TITLE);
     }
 
-    @Step("Going to Practice Form page")
+    @Step("Going to 'Practice Form' page")
     public PracticeFormPage goToPracticeFormPage() {
         formsAutomationTile.getGoToButton().click();
         return new PracticeFormPage().shouldBeLoaded();
     }
 
-    @Step("Going to Data Table page")
+    @Step("Going to 'Data Table' page")
     public DataTablePage goToDataTablePage() {
         tableAutomationTile.getGoToButton().click();
         return new DataTablePage().shouldBeLoaded();
+    }
+
+    @Step("Going to 'File Download' page")
+    public FileDownloadPage goToFileDownloadPage() {
+        fileDownloadAutomationTile.getGoToButton().click();
+        return new FileDownloadPage().shouldBeLoaded();
     }
 }
