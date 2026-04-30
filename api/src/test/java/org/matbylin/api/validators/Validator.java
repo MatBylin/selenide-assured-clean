@@ -3,15 +3,10 @@ package org.matbylin.api.validators;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.matbylin.api.core.ApiResponse;
-import org.matbylin.api.validators.user.UserOutputDtoValidator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-/**
- * Base fluent validator for shared {@link ApiResponse} checks (status code, body present or empty).
- * Typed DTO rules live in subclasses (e.g. {@link UserOutputDtoValidator}); responses without a typed body use {@link ResponseValidator}.
- */
 @Slf4j
 public abstract class Validator<T extends Validator<T>> {
 
@@ -23,7 +18,7 @@ public abstract class Validator<T extends Validator<T>> {
 
     @Step("Validating status code is {expected}")
     public T hasStatusCode(int expected) {
-        log.info("Validating expected status code: %s".formatted(expected));
+        log.info("Validating expected status code: {}", expected);
         assertThat("Validating expected status code", apiResponse.getStatusCode(), equalTo(expected));
         return self();
     }

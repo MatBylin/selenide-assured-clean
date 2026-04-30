@@ -7,11 +7,12 @@ import org.matbylin.api.tests.BaseApiTest;
 import org.matbylin.api.validators.ResponseValidator;
 import org.matbylin.api.validators.user.UserCreatedDtoValidator;
 import org.matbylin.api.validators.user.UserOutputDtoValidator;
+import org.matbylin.core.groups.Tag;
 import org.testng.annotations.Test;
 
 public class UsersApiTests extends BaseApiTest {
 
-    @Test
+    @Test(groups = {Tag.SMOKE})
     void validateUserNameById() {
         var getResponse = new UsersApi().getUser("10");
 
@@ -20,7 +21,7 @@ public class UsersApiTests extends BaseApiTest {
                 .hasExpectedName("Byron", "Fields");
     }
 
-    @Test
+    @Test(groups = {Tag.SMOKE})
     void validateNewUserCreation() {
         var userInput = UserInputDtoData.valid();
         var postResponse = new UsersApi().createUser(userInput);
@@ -30,7 +31,7 @@ public class UsersApiTests extends BaseApiTest {
                 .hasExpectedInputData(userInput);
     }
 
-    @Test
+    @Test(groups = {Tag.SMOKE})
     void validateUserDelete() {
         var userResponse = new UsersApi().deleteUser("2");
 

@@ -1,4 +1,4 @@
-package org.matbylin.gui.groups;
+package org.matbylin.core.groups;
 
 public class Tag {
     public static final String SMOKE = "SMOKE";

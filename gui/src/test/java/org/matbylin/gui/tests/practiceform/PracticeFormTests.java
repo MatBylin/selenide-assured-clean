@@ -1,10 +1,10 @@
 package org.matbylin.gui.tests.practiceform;
 
 import io.qameta.allure.Story;
+import org.matbylin.core.groups.Tag;
 import org.matbylin.gui.fixtures.practiceform.AccountDetailsData;
 import org.matbylin.gui.fixtures.practiceform.AddressDetailsData;
 import org.matbylin.gui.fixtures.practiceform.PersonalDetailsData;
-import org.matbylin.gui.groups.Tag;
 import org.matbylin.gui.tests.BaseGuiTest;
 import org.matbylin.gui.validators.practiceform.PracticeFormValidator;
 import org.testng.annotations.Test;
