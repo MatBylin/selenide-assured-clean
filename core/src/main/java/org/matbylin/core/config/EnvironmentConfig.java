@@ -12,8 +12,11 @@ public interface EnvironmentConfig extends Config {
     @Key("environment")
     String env();
 
-    @Key("api.app.url")
-    String apiAppUrl();
+    @Key("api.reqres.url")
+    String apiReqresUrl();
+
+    @Key("api.qaplayground.url")
+    String apiQaPlaygroundUrl();
 
     @Key("api.app.token")
     String apiAppToken();

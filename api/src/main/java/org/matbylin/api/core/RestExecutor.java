@@ -59,10 +59,7 @@ public class RestExecutor implements ApiExecutor {
     }
 
     private <T> ApiResponse<T> mapResponse(Response response, Class<T> responseType) {
-        response.then()
-                .log().status()
-                .log().body();
-
+        logResponse(response, responseType);
         var rawBody = rawBody(response);
         var deserializedBody = deserialize(response, responseType);
 
@@ -80,11 +77,11 @@ public class RestExecutor implements ApiExecutor {
     }
 
     private <T> T deserialize(Response response, Class<T> responseType) {
-        if (responseType == null || responseType == Void.class || responseType == void.class) {
+        if (shouldNotBeDeserialized(response, responseType)) {
             return null;
         }
-        if (response.getBody() == null) {
-            return null;
+        if (responseType == byte[].class) {
+            return (T) response.asByteArray();
         }
         try {
             return response.as(responseType);
@@ -96,6 +93,19 @@ public class RestExecutor implements ApiExecutor {
                     e.getMessage()
             );
             return null;
+        }
+    }
+
+    private boolean shouldNotBeDeserialized(Response response, Class<?> responseType) {
+        return responseType == null || responseType == Void.class || responseType == void.class || response.getBody() == null;
+    }
+
+    private void logResponse(Response response, Class<?> responseType) {
+        var isBinary = responseType == byte[].class;
+
+        var logged = response.then().log().status();
+        if (!isBinary) {
+            logged.log().body();
         }
     }
 

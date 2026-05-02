@@ -7,7 +7,8 @@ import org.matbylin.core.config.EnvironmentConfigProvider;
 @Getter
 @AllArgsConstructor
 public enum TargetApi {
-    REQRES(EnvironmentConfigProvider.get().apiAppUrl());
+    REQRES(EnvironmentConfigProvider.get().apiReqresUrl()),
+    QA_PLAYGROUND(EnvironmentConfigProvider.get().apiQaPlaygroundUrl());
 
     private final String url;
 }
