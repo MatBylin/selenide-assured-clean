@@ -27,7 +27,8 @@ public abstract class BaseTest {
 
         log.info("============ Environment Variables ============");
         log.info("environment : {}", config.env());
-        log.info("api.base.url: {}", config.apiAppUrl());
+        log.info("api.reqres.url: {}", config.apiReqresUrl());
+        log.info("api.qaplayground.url: {}", config.apiQaPlaygroundUrl());
         log.info("ui.base.url: {}", config.uiAppUrl());
         log.info("===============================================\n");
     }

@@ -7,6 +7,9 @@ import io.restassured.specification.RequestSpecification;
 import org.matbylin.api.config.RestAssuredPropertiesProvider;
 import org.matbylin.api.config.auth.AuthProvider;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.apache.http.protocol.HTTP.CONTENT_TYPE;
 
@@ -26,14 +29,19 @@ public class RequestSpecificationBuilder {
         return RestAssured.given()
                 .config(timeoutConfig())
                 .baseUri(request.getTargetApi().getUrl())
-                .headers(request.getHeaders())
+                .headers(resolveHttpHeaders(request))
                 .queryParams(request.getQueryParams())
                 .pathParams(request.getPathParams())
-                .header(X_API_KEY, authProvider.getToken())
-                .header(CONTENT_TYPE, APPLICATION_JSON.getMimeType())
                 .log().uri()
                 .log().method()
                 .log().body();
+    }
+
+    private Map<String, String> resolveHttpHeaders(ApiRequest request) {
+        var headers = new HashMap<>(request.getHeaders());
+        headers.putIfAbsent(CONTENT_TYPE, APPLICATION_JSON.getMimeType());
+        headers.put(X_API_KEY, authProvider.getToken());
+        return headers;
     }
 
     private RestAssuredConfig timeoutConfig() {
