@@ -1,15 +1,9 @@
 package org.matbylin.api.core;
 
-import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
-import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.Header;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.matbylin.api.config.RestAssuredPropertiesProvider;
 import org.matbylin.api.config.auth.AuthProvider;
 
 import java.util.List;
@@ -18,14 +12,17 @@ import java.util.stream.Collectors;
 
 
 @Slf4j
-@AllArgsConstructor
 public class RestExecutor implements ApiExecutor {
 
-    private final AuthProvider authProvider;
+    private final RequestSpecificationBuilder requestSpecificationBuilder;
+
+    public RestExecutor(AuthProvider authProvider) {
+        this.requestSpecificationBuilder = new RequestSpecificationBuilder(authProvider);
+    }
 
     @Override
     public <T> ApiResponse<T> get(ApiRequest request, Class<T> responseType) {
-        var response = givenRequest(request)
+        var response = requestSpecificationBuilder.build(request)
                 .when()
                 .get(request.getPath());
 
@@ -34,7 +31,7 @@ public class RestExecutor implements ApiExecutor {
 
     @Override
     public <T> ApiResponse<T> post(ApiRequest request, Class<T> responseType) {
-        var response = givenRequest(request)
+        var response = requestSpecificationBuilder.build(request)
                 .body(request.getBody())
                 .when()
                 .post(request.getPath());
@@ -44,7 +41,7 @@ public class RestExecutor implements ApiExecutor {
 
     @Override
     public <T> ApiResponse<T> put(ApiRequest request, Class<T> responseType) {
-        var response = givenRequest(request)
+        var response = requestSpecificationBuilder.build(request)
                 .body(request.getBody())
                 .when()
                 .put(request.getPath());
@@ -54,30 +51,11 @@ public class RestExecutor implements ApiExecutor {
 
     @Override
     public <T> ApiResponse<T> delete(ApiRequest request, Class<T> responseType) {
-        var response = givenRequest(request)
+        var response = requestSpecificationBuilder.build(request)
                 .when()
                 .delete(request.getPath());
 
         return mapResponse(response, responseType);
-    }
-
-    private RequestSpecification givenRequest(ApiRequest request) {
-        var restAssuredProperties = RestAssuredPropertiesProvider.get();
-
-        return RestAssured.given()
-                .config(RestAssuredConfig.config()
-                        .httpClient(HttpClientConfig.httpClientConfig()
-                                .setParam("http.connection.timeout", restAssuredProperties.connectionTimeout())
-                                .setParam("http.socket.timeout", restAssuredProperties.socketTimeout())))
-                .baseUri(request.getTargetApi().getUrl())
-                .headers(request.getHeaders())
-                .queryParams(request.getQueryParams())
-                .pathParams(request.getPathParams())
-                .header("x-api-key", authProvider.getToken())
-                .header("Content-Type", "application/json")
-                .log().uri()
-                .log().method()
-                .log().body();
     }
 
     private <T> ApiResponse<T> mapResponse(Response response, Class<T> responseType) {
