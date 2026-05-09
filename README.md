@@ -396,3 +396,24 @@ public class ProductInputDtoFactory {
 
 Create an XML file under `suites/xml/` following the same structure as `SMOKE.xml`, then run it
 with `-Dsuite=<filename-without-extension>`.
+
+
+
+public String loginAndGetToken(String keycloakUrl, String user, String pass) {
+    open(keycloakUrl + "/admin/master/console/");
+
+    $("#username").shouldBe(visible).setValue(user);
+    $("#password").setValue(pass);
+    $("#kc-login").click();
+
+    $(".pf-v5-c-page__header").shouldBe(visible); // wait for console header
+
+    return (String) executeJavaScript("""
+        for (const key of Object.keys(sessionStorage)) {
+            if (key.includes('token')) {
+                const v = JSON.parse(sessionStorage.getItem(key));
+                if (v?.access_token) return v.access_token;
+            }
+        }
+        return null;
+    """);
