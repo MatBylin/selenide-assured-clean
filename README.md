@@ -437,3 +437,63 @@ String localDump = (String) executeJavaScript("""
     return JSON.stringify(result);
 """);
 System.out.println("LOCAL: " + localDump);
+
+
+Capture token via ResponseFilter
+javaimport com.browserup.bup.util.HttpMessageInfo;
+import com.browserup.bup.filters.ResponseFilter;
+import com.browserup.harreader.model.HarPostDataParam;
+import io.netty.handler.codec.http.HttpResponse;
+import com.browserup.bup.util.HttpMessageContents;
+
+import java.util.concurrent.atomic.AtomicReference;
+
+public class KeycloakTokenCapture {
+
+    private final AtomicReference<String> capturedToken = new AtomicReference<>();
+
+    public void registerTokenFilter() {
+        proxy.addResponseFilter((response, contents, messageInfo) -> {
+            if (messageInfo.getOriginalUrl().contains("/openid-connect/token")) {
+                String body = contents.getTextContents();
+                String token = extractField(body, "access_token");
+                capturedToken.set(token);
+            }
+        });
+    }
+
+    public String getToken() {
+        return capturedToken.get();
+    }
+
+    private String extractField(String json, String field) {
+        String key = "\"" + field + "\":\"";
+        int start = json.indexOf(key) + key.length();
+        int end   = json.indexOf("\"", start);
+        return (start > key.length() - 1) ? json.substring(start, end) : null;
+    }
+}
+
+Wire it into your test
+javapublic class LoginTest {
+
+    private KeycloakTokenCapture tokenCapture = new KeycloakTokenCapture();
+    private String accessToken;
+
+    @BeforeClass
+    public void setUp() {
+        // Register filter BEFORE opening browser
+        tokenCapture.registerTokenFilter();
+
+        // Normal Selenide login
+        open("https://keycloak.example.com/admin/master/console/");
+        $("#username").setValue("admin");
+        $("#password").setValue("password");
+        $("#kc-login").click();
+        $(".pf-v5-c-page__header").shouldBe(visible);
+
+        // Token was captured during login redirect
+        accessToken = tokenCapture.getToken();
+        System.out.println("Access token: " + accessToken);
+    }
+}
