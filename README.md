@@ -497,3 +497,49 @@ javapublic class LoginTest {
         System.out.println("Access token: " + accessToken);
     }
 }
+
+
+
+///
+
+
+public class LoginTest {
+
+    private String accessToken;
+
+    @BeforeClass
+    public void setUp() {
+        open("https://keycloak.example.com/admin/master/console/");
+
+        // Get underlying ChromeDriver from Selenide
+        ChromeDriver driver = (ChromeDriver) WebDriverRunner.getWebDriver();
+        DevTools devTools = driver.getDevTools();
+        devTools.createSession();
+        devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+
+        AtomicReference<String> capturedToken = new AtomicReference<>();
+
+        devTools.addListener(Network.responseReceived(), (ResponseReceived event) -> {
+            if (event.getResponse().getUrl().contains("/openid-connect/token")) {
+                devTools.send(Network.getResponseBody(event.getRequestId()))
+                    .ifPresent(body -> capturedToken.set(extractField(body.getBody(), "access_token")));
+            }
+        });
+
+        // Login
+        $("#username").setValue("admin");
+        $("#password").setValue("password");
+        $("#kc-login").click();
+        $(".pf-v5-c-page__header").shouldBe(visible);
+
+        accessToken = capturedToken.get();
+        System.out.println("Token: " + accessToken);
+    }
+
+    private String extractField(String json, String field) {
+        String key = "\"" + field + "\":\"";
+        int start = json.indexOf(key) + key.length();
+        int end   = json.indexOf("\"", start);
+        return json.substring(start, end);
+    }
+}
