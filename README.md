@@ -417,3 +417,23 @@ public String loginAndGetToken(String keycloakUrl, String user, String pass) {
         }
         return null;
     """);
+
+
+    String sessionDump = (String) executeJavaScript("""
+    const result = {};
+    for (const key of Object.keys(sessionStorage)) {
+        result[key] = sessionStorage.getItem(key);
+    }
+    return JSON.stringify(result);
+""");
+System.out.println("SESSION: " + sessionDump);
+
+// Dump all localStorage keys + values  
+String localDump = (String) executeJavaScript("""
+    const result = {};
+    for (const key of Object.keys(localStorage)) {
+        result[key] = localStorage.getItem(key);
+    }
+    return JSON.stringify(result);
+""");
+System.out.println("LOCAL: " + localDump);
