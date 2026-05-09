@@ -543,3 +543,10 @@ public class LoginTest {
         return json.substring(start, end);
     }
 }
+
+
+proxy.addResponseFilter((response, contents, messageInfo) -> {
+    if (messageInfo.getOriginalUrl().contains("/openid-connect/token")) {
+        capturedToken.set(extractField(contents.getTextContents(), "access_token"));
+    }
+});
