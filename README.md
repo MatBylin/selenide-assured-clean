@@ -545,6 +545,20 @@ public class LoginTest {
 }
 
 
+///
+        <dependency>
+            <groupId>com.github.valfirst.browserup-proxy</groupId>
+            <artifactId>browserup-proxy-core</artifactId>
+            <version>3.3.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
 proxy.addResponseFilter((response, contents, messageInfo) -> {
     if (messageInfo.getOriginalUrl().contains("/openid-connect/token")) {
         capturedToken.set(extractField(contents.getTextContents(), "access_token"));
