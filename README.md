@@ -564,3 +564,30 @@ proxy.addResponseFilter((response, contents, messageInfo) -> {
         capturedToken.set(extractField(contents.getTextContents(), "access_token"));
     }
 });
+
+
+
+        <dependency>
+            <groupId>com.github.valfirst.browserup-proxy</groupId>
+            <artifactId>browserup-proxy-core</artifactId>
+            <version>3.3.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+                <dependency>
+            <groupId>com.github.valfirst.browserup-proxy</groupId>
+            <artifactId>browserup-proxy-core</artifactId>
+            <version>3.3.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
