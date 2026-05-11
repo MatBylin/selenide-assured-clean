@@ -591,3 +591,58 @@ proxy.addResponseFilter((response, contents, messageInfo) -> {
                 </exclusion>
             </exclusions>
         </dependency>
+
+///
+TOKEN
+package org.matbylin.api.config.auth;
+
+import io.restassured.http.ContentType;
+import org.matbylin.core.config.EnvironmentConfigProvider;
+
+import java.time.Instant;
+
+import static io.restassured.RestAssured.given;
+
+public class TokenProvider implements AuthProvider {
+
+    private static final int EXPIRY_BUFFER_SECONDS = 30;
+    private static final Object LOCK = new Object();
+
+    private static String cachedToken;
+    private static Instant tokenExpiresAt = Instant.MIN;
+
+    @Override
+    public String getToken() {
+        synchronized (LOCK) {
+            if (isTokenExpired()) {
+                refreshToken();
+            }
+            return cachedToken;
+        }
+    }
+
+    private static boolean isTokenExpired() {
+        return Instant.now().plusSeconds(EXPIRY_BUFFER_SECONDS).isAfter(tokenExpiresAt);
+    }
+
+    private static void refreshToken() {
+        var config = EnvironmentConfigProvider.get();
+        String tokenUrl = config.keycloakUrl()
+                + "/realms/" + config.keycloakRealm()
+                + "/protocol/openid-connect/token";
+
+        KeycloakTokenResponse response = given()
+                .contentType(ContentType.URLENC)
+                .formParam("grant_type", "client_credentials")
+                .formParam("client_id", config.keycloakClientId())
+                .formParam("client_secret", config.keycloakClientSecret())
+                .post(tokenUrl)
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(KeycloakTokenResponse.class);
+
+        cachedToken = response.getAccessToken();
+        tokenExpiresAt = Instant.now().plusSeconds(response.getExpiresIn());
+    }
+}
