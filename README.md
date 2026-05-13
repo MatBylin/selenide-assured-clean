@@ -646,3 +646,21 @@ public class TokenProvider implements AuthProvider {
         tokenExpiresAt = Instant.now().plusSeconds(response.getExpiresIn());
     }
 }
+
+
+//
+
+@UtilityClass
+public class JsonFileLoader {
+
+    public static String load(String classpathPath) {
+        try (InputStream stream = JsonFileLoader.class.getClassLoader().getResourceAsStream(classpathPath)) {
+            if (stream == null) {
+                throw new IllegalArgumentException("JSON file not found on classpath: " + classpathPath);
+            }
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to read JSON file: " + classpathPath, e);
+        }
+    }
+}
