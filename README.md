@@ -650,10 +650,7 @@ public class TokenProvider implements AuthProvider {
 
 //
 
-@UtilityClass
-public class JsonFileLoader {
-
-    public static String load(String classpathPath) {
+    public static String fromClasspath(String classpathPath) {
         try (InputStream stream = JsonFileLoader.class.getClassLoader().getResourceAsStream(classpathPath)) {
             if (stream == null) {
                 throw new IllegalArgumentException("JSON file not found on classpath: " + classpathPath);
@@ -661,6 +658,14 @@ public class JsonFileLoader {
             return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to read JSON file: " + classpathPath, e);
+        }
+    }
+
+    public static String fromFile(String filePath) {
+        try {
+            return Files.readString(Path.of(filePath));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to read JSON file: " + filePath, e);
         }
     }
 }
