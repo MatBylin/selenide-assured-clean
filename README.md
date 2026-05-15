@@ -669,3 +669,119 @@ public class TokenProvider implements AuthProvider {
         }
     }
 }
+
+
+
+///
+
+
+package org.matbylin.core.listeners.xray;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.qameta.allure.TmsLink;
+import lombok.extern.slf4j.Slf4j;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ITestResult;
+import org.testng.xml.XmlSuite;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+@Slf4j
+public class XrayExporterListener implements IReporter {
+
+    private static final String PROP_TEST_EXECUTION_KEY = "xray.testExecutionKey";
+    private static final String PROP_JIRA_BASE_URL = "xray.jira.baseUrl";
+    private static final String PROP_JIRA_TOKEN = "xray.jira.token";
+    private static final String XRAY_IMPORT_ENDPOINT = "/rest/raven/1.0/import/execution";
+
+    @Override
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+        String testExecutionKey = System.getProperty(PROP_TEST_EXECUTION_KEY);
+        if (testExecutionKey == null || testExecutionKey.isBlank()) {
+            log.info("Xray export skipped — '{}' not provided", PROP_TEST_EXECUTION_KEY);
+            return;
+        }
+
+        String jiraBaseUrl = System.getProperty(PROP_JIRA_BASE_URL);
+        String jiraToken = System.getProperty(PROP_JIRA_TOKEN);
+
+        if (jiraBaseUrl == null || jiraBaseUrl.isBlank()) {
+            log.error("Xray export failed — '{}' not provided", PROP_JIRA_BASE_URL);
+            return;
+        }
+        if (jiraToken == null || jiraToken.isBlank()) {
+            log.error("Xray export failed — '{}' not provided", PROP_JIRA_TOKEN);
+            return;
+        }
+
+        List<Map<String, String>> tests = collectResults(suites);
+        if (tests.isEmpty()) {
+            log.warn("Xray export skipped — no tests with @TmsLink found");
+            return;
+        }
+
+        exportToXray(jiraBaseUrl, jiraToken, testExecutionKey, tests);
+    }
+
+    private List<Map<String, String>> collectResults(List<ISuite> suites) {
+        List<Map<String, String>> results = new ArrayList<>();
+        for (ISuite suite : suites) {
+            suite.getResults().values().forEach(suiteResult -> {
+                var ctx = suiteResult.getTestContext();
+                collectFromSet(ctx.getPassedTests().getAllResults(), "PASSED", results);
+                collectFromSet(ctx.getFailedTests().getAllResults(), "FAILED", results);
+                collectFromSet(ctx.getSkippedTests().getAllResults(), "ABORTED", results);
+            });
+        }
+        return results;
+    }
+
+    private void collectFromSet(Set<ITestResult> testResults, String status, List<Map<String, String>> collected) {
+        testResults.forEach(result -> {
+            var method = result.getMethod().getConstructorOrMethod().getMethod();
+            var tmsLink = method.getAnnotation(TmsLink.class);
+            if (tmsLink != null && !tmsLink.value().isBlank()) {
+                collected.add(Map.of("testKey", tmsLink.value(), "status", status));
+                log.debug("Collected: {} -> {}", tmsLink.value(), status);
+            }
+        });
+    }
+
+    private void exportToXray(String jiraBaseUrl, String jiraToken, String testExecutionKey, List<Map<String, String>> tests) {
+        try {
+            var payload = Map.of(
+                    "testExecutionKey", testExecutionKey,
+                    "tests", tests
+            );
+
+            var json = new ObjectMapper().writeValueAsString(payload);
+
+            var request = HttpRequest.newBuilder()
+                    .uri(URI.create(jiraBaseUrl + XRAY_IMPORT_ENDPOINT))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + jiraToken)
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            var response = HttpClient.newHttpClient()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                log.info("Xray export successful — TestExecution: {}, tests exported: {}", testExecutionKey, tests.size());
+            } else {
+                log.error("Xray export failed — HTTP {}: {}", response.statusCode(), response.body());
+            }
+        } catch (Exception e) {
+            log.error("Xray export failed — {}", e.getMessage(), e);
+        }
+    }
+}
+
