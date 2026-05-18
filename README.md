@@ -1033,3 +1033,17 @@ if [ "$exportResultToXray" = "true" ]; then
 else
     echo "XRAY_EXTRA_PARAMS=" > xray.properties
 fi
+
+
+
+
+////
+
+MVN_PARAMS="clean compile test -Dsuite=MOJA_SUITA"
+
+if [ "$exportResultToXray" = "true" ]; then
+    MVN_PARAMS="$MVN_PARAMS -Dxray.testExecutionKey=${xrayTestExecutionKey}"
+    MVN_PARAMS="$MVN_PARAMS -Dxray.jira.url=${XRAY_URL}"
+fi
+
+mvn $MVN_PARAMS
