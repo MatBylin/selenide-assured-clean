@@ -785,6 +785,232 @@ public class XrayExporterListener implements IReporter {
     }
 }
 
+
+////
+
+package org.matbylin.core.db;
+
+import org.aeonbits.owner.Config;
+
+@Config.LoadPolicy(Config.LoadType.MERGE)
+@Config.Sources({
+        "system:properties",
+        "classpath:environment/${env}.properties",
+})
+public interface DatabaseConfig extends Config {
+
+    @Key("db.host")
+    @DefaultValue("localhost")
+    String host();
+
+    @Key("db.port")
+    @DefaultValue("5432")
+    int port();
+
+    @Key("db.name")
+    String name();
+
+    @Key("db.username")
+    String username();
+
+    @Key("db.password")
+    String password();
+}
+
+////
+package org.matbylin.core.db;
+
+import lombok.experimental.UtilityClass;
+import org.aeonbits.owner.ConfigFactory;
+import org.matbylin.core.config.Environment;
+
+import java.util.Map;
+
+@UtilityClass
+public class DatabaseConfigProvider {
+
+    private static final String ENV_PROPERTY = "env";
+    private static final DatabaseConfig CONFIG = ConfigFactory.create(DatabaseConfig.class, Map.of(ENV_PROPERTY, getEnvironment()));
+
+    public static DatabaseConfig get() {
+        return CONFIG;
+    }
+
+    private static Environment getEnvironment() {
+        return Environment.from(System.getProperty(ENV_PROPERTY));
+    }
+}
+////
+package org.matbylin.core.db;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import lombok.experimental.UtilityClass;
+
+import javax.sql.DataSource;
+
+@UtilityClass
+public class DatabaseConnectionProvider {
+
+    private static final HikariDataSource DATA_SOURCE = buildDataSource();
+
+    public static DataSource get() {
+        return DATA_SOURCE;
+    }
+
+    private static HikariDataSource buildDataSource() {
+        DatabaseConfig config = DatabaseConfigProvider.get();
+        HikariConfig hikari = new HikariConfig();
+        hikari.setJdbcUrl("jdbc:postgresql://%s:%d/%s".formatted(config.host(), config.port(), config.name()));
+        hikari.setUsername(config.username());
+        hikari.setPassword(config.password());
+        hikari.setMaximumPoolSize(5);
+        hikari.setConnectionTimeout(30_000);
+        return new HikariDataSource(hikari);
+    }
+}
+////
+
+package org.matbylin.core.db;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.sql.*;
+import java.util.*;
+
+@Slf4j
+@UtilityClass
+public class DbClient {
+
+    public static Optional<DbRow> selectOne(SqlScript script, Object... params) {
+        List<DbRow> results = select(script, params);
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst());
+    }
+
+    public static List<DbRow> select(SqlScript script, Object... params) {
+        String sql = readScript(script);
+        log.debug("Executing script [{}]: {}", script.name(), sql);
+        try (Connection connection = DatabaseConnectionProvider.get().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            for (int i = 0; i < params.length; i++) {
+                statement.setObject(i + 1, params[i]);
+            }
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return mapResultSet(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Query failed [%s]".formatted(script.name()), e);
+        }
+    }
+
+    private static String readScript(SqlScript script) {
+        try (InputStream is = DbClient.class.getClassLoader().getResourceAsStream(script.getPath())) {
+            if (is == null) {
+                throw new RuntimeException("SQL script not found on classpath: %s".formatted(script.getPath()));
+            }
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read SQL script: %s".formatted(script.getPath()), e);
+        }
+    }
+
+    private static List<DbRow> mapResultSet(ResultSet resultSet) throws SQLException {
+        ResultSetMetaData meta = resultSet.getMetaData();
+        int columnCount = meta.getColumnCount();
+        List<DbRow> rows = new ArrayList<>();
+        while (resultSet.next()) {
+            Map<String, Object> row = new LinkedHashMap<>();
+            for (int i = 1; i <= columnCount; i++) {
+                row.put(meta.getColumnName(i), resultSet.getObject(i));
+            }
+            rows.add(new DbRow(row));
+        }
+        return rows;
+    }
+}
+
+///
+
+package org.matbylin.core.db;
+
+import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+
+@RequiredArgsConstructor
+public class DbRow {
+
+    private final Map<String, Object> data;
+
+    public String getString(String column) {
+        return get(column, String.class);
+    }
+
+    public Integer getInt(String column) {
+        return get(column, Integer.class);
+    }
+
+    public Long getLong(String column) {
+        return get(column, Long.class);
+    }
+
+    public Boolean getBoolean(String column) {
+        return get(column, Boolean.class);
+    }
+
+    public <T> T get(String column, Class<T> type) {
+        Object value = data.get(column);
+        if (value == null) return null;
+        return type.cast(value);
+    }
+
+    public boolean hasColumn(String column) {
+        return data.containsKey(column);
+    }
+
+    public Map<String, Object> getRaw() {
+        return data;
+    }
+}
+////
+
+        <postgresql-version>42.7.4</postgresql-version>
+        <hikaricp-version>5.1.0</hikaricp-version>
+
+                    </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zaxxer</groupId>
+                <artifactId>HikariCP</artifactId>
+                <version>${hikaricp-version}</version>
+            </dependency>
+
+            ///
+
+            ///
+
+            
+@Getter
+@RequiredArgsConstructor
+public enum SqlScript {
+
+    FIND_USER_BY_ID("sql/users/find_user_by_id.sql"),
+    FIND_USERS_BY_STATUS("sql/users/find_users_by_status.sql"),
+    FIND_ALL_USERS("sql/users/find_all_users.sql");
+
+    private final String path;
+}
+
 # without Xray export (skips silently)
 mvn test -Dsuite=SMOKE_API
 
