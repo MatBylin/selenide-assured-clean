@@ -785,3 +785,20 @@ public class XrayExporterListener implements IReporter {
     }
 }
 
+# without Xray export (skips silently)
+mvn test -Dsuite=SMOKE_API
+
+# with Xray export
+mvn test -Dsuite=SMOKE_API \
+  -Dxray.testExecutionKey=PROJ-666 \
+  -Dxray.jira.baseUrl=https://your-jira.com \
+  -Dxray.jira.token=your-token
+Jenkins
+withCredentials([string(credentialsId: 'jira-token', variable: 'JIRA_TOKEN')]) {
+    def xrayArgs = params.XRAY_TEST_EXECUTION_KEY?.trim()
+        ? "-Dxray.testExecutionKey=${params.XRAY_TEST_EXECUTION_KEY} -Dxray.jira.baseUrl=${params.JIRA_BASE_URL} -Dxray.jira.token=${JIRA_TOKEN}"
+        : ""
+    sh "mvn test -Dsuite=SMOKE_API ${xrayArgs}"
+}
+//
+
