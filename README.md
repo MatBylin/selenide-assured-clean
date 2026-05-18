@@ -1028,3 +1028,8 @@ withCredentials([string(credentialsId: 'jira-token', variable: 'JIRA_TOKEN')]) {
 }
 //
 
+if [ "$exportResultToXray" = "true" ]; then
+    echo "XRAY_EXTRA_PARAMS=-Dxray.testExecutionKey=${xrayTestExecutionKey} -Dxray.jira.url=${XRAY_URL}" > xray.properties
+else
+    echo "XRAY_EXTRA_PARAMS=" > xray.properties
+fi
