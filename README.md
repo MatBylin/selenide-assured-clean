@@ -1152,3 +1152,10 @@ public ApiResponse<LogResultDto> waitForLog(String query, Duration timeout) {
     );
 }
 ///
+
+try {
+    await().atMost(timeout).pollInterval(interval).alias(alias)
+           .until(() -> { ref.set(requestSupplier.get()); return condition.test(ref.get()); });
+} catch (ConditionTimeoutException e) {
+    throw new AssertionError("Polling condition not met: " + alias, e);
+}
