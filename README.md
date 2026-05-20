@@ -1124,3 +1124,31 @@ public void invalidateToken() {
 }
 
 ////
+
+public class ApiPoller {
+    public static <T> ApiResponse<T> pollUntil(
+        Supplier<ApiResponse<T>> requestSupplier,
+        Predicate<ApiResponse<T>> condition,
+        Duration timeout,
+        Duration interval
+    ) {
+        AtomicReference<ApiResponse<T>> ref = new AtomicReference<>();
+        await().atMost(timeout).pollInterval(interval)
+               .until(() -> { ref.set(requestSupplier.get()); return condition.test(ref.get()); });
+        return ref.get();
+    }
+}
+Service method uses it cleanly:
+
+// ElasticApi.java
+@Step("Wait for log matching: {query}")
+public ApiResponse<LogResultDto> waitForLog(String query, Duration timeout) {
+    ApiRequest request = ApiRequest.builder()...queryParam("q", query).build();
+    return ApiPoller.pollUntil(
+        () -> restExecutor.get(request, LogResultDto.class),
+        r -> r.getStatusCode() == 200 && r.getBody() != null,
+        timeout,
+        Duration.ofSeconds(3)
+    );
+}
+///
