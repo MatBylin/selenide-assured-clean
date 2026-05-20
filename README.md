@@ -1159,3 +1159,22 @@ try {
 } catch (ConditionTimeoutException e) {
     throw new AssertionError("Polling condition not met: " + alias, e);
 }
+
+///
+public ApiResponse<LogResultDto> waitForLog(String query, Duration timeout) {
+    ApiRequest request = ApiRequest.builder()...queryParam("q", query).build();
+    AtomicReference<ApiResponse<LogResultDto>> ref = new AtomicReference<>();
+
+    ApiPoller.pollUntilAsserted(
+        () -> {
+            ref.set(restExecutor.get(request, LogResultDto.class));
+            assertThat(ref.get().getStatusCode(), equalTo(200));
+            assertThat(ref.get().getBody(), notNullValue());
+        },
+        timeout,
+        Duration.ofSeconds(3),
+        "Log matching query: " + query
+    );
+
+    return ref.get();
+}
