@@ -1059,3 +1059,68 @@ if [ "$exportResultToXray" = "true" ]; then
 fi
 
 mvn $MVN_PARAMS
+
+
+
+////
+public class CachedTokenService {
+
+    private final KeycloakTokenProvider tokenProvider;
+    private final TokenCache cache;
+
+    public CachedTokenService(KeycloakTokenProvider tokenProvider, TokenCache cache) {
+        this.tokenProvider = tokenProvider;
+        this.cache = cache;
+    }
+
+    public String getToken() {
+        String cached = cache.get();
+        if (cached != null) {
+            return cached;
+        }
+        TokenResponse fresh = tokenProvider.fetchToken();
+        cache.put(fresh.accessToken(), fresh.expiresInSeconds());
+        return fresh.accessToken();
+    }
+
+    public void invalidate() {
+        cache.invalidate();
+    }
+}
+////
+public class TokenCache {
+
+    private static final int EXPIRY_BUFFER_SECONDS = 30;
+
+    private String token;
+    private Instant expiresAt;
+
+    public synchronized String get() {
+        if (token != null && expiresAt != null && Instant.now().isBefore(expiresAt)) {
+            return token;
+        }
+        return null;
+    }
+
+    public synchronized void put(String token, int expiresInSeconds) {
+        this.token = token;
+        this.expiresAt = Instant.now().plusSeconds(expiresInSeconds - EXPIRY_BUFFER_SECONDS);
+    }
+
+    public synchronized void invalidate() {
+        this.token = null;
+        this.expiresAt = null;
+    }
+}
+////
+private static final CachedTokenService tokenService = new CachedTokenService(
+        new KeycloakTokenProvider("https://keycloak.example.com", "my-realm", "client-id", "secret"),
+        new TokenCache()
+);
+
+@AfterMethod(alwaysRun = true)
+public void invalidateToken() {
+    tokenService.invalidate();
+}
+
+////
