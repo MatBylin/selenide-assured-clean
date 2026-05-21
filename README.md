@@ -1178,3 +1178,15 @@ public ApiResponse<LogResultDto> waitForLog(String query, Duration timeout) {
 
     return ref.get();
 }
+
+
+///
+echo "=== Env ==="
+env | grep -iE 'proxy|java'
+echo "=== DNS ==="
+nslookup your-es-host
+echo "=== TCP ==="
+nc -zv your-es-host 9200
+echo "=== HTTP ==="
+curl -v --max-time 15 https://your-es-host:9200 \
+     -H "Authorization: ApiKey $ES_API_KEY"
