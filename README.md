@@ -1263,3 +1263,61 @@ public class MyWebComponent extends BaseShadowComponent<MyWebComponent> {
             }
         };
     }
+
+
+
+    ////
+    public abstract class BaseShadowComponent<T extends BaseShadowComponent<T>> extends BaseComponent<T> {
+
+    protected BaseShadowComponent(SelenideElement shadowHost) {
+        super(shadowHost);
+    }
+
+    @Override
+    protected SelenideElement $(String cssSelector) {
+        return Selenide.$(shadowBy(By.cssSelector(cssSelector)));
+    }
+
+    @Override
+    protected ElementsCollection $$(String cssSelector) {
+        return Selenide.$$(shadowBy(By.cssSelector(cssSelector)));
+    }
+
+    @Override
+    protected SelenideElement $(By locator) {
+        return Selenide.$(shadowBy(locator));
+    }
+
+    @Override
+    protected ElementsCollection $$(By locator) {
+        return Selenide.$$(shadowBy(locator));
+    }
+
+    // Wraps any locator so it is resolved inside this component's shadow root.
+    // getRoot().getShadowRoot() is called fresh on every lookup — no stale references.
+    private By shadowBy(By locator) {
+        return new ShadowRootBy(getRoot(), locator);
+    }
+
+    @NullMarked
+    private static final class ShadowRootBy extends By {
+
+        private final SelenideElement shadowHost;
+        private final By locator;
+
+        private ShadowRootBy(SelenideElement shadowHost, By locator) {
+            this.shadowHost = shadowHost;
+            this.locator = locator;
+        }
+
+        @Override
+        public List<WebElement> findElements(SearchContext context) {
+            return shadowHost.getShadowRoot().findElements(locator);
+        }
+
+        @Override
+        public String toString() {
+            return "shadow::" + locator;
+        }
+    }
+}
