@@ -1245,3 +1245,21 @@ public class MyWebComponent extends BaseShadowComponent<MyWebComponent> {
         return new Button($("#submit-btn")); // resolves inside shadow root
     }
 }
+
+
+///
+
+
+    private By shadowBy(By locator) {
+        return new By() {
+            @Override
+            public List<WebElement> findElements(SearchContext context) {
+                return getRoot().getShadowRoot().findElements(locator);
+            }
+
+            @Override
+            public String toString() {
+                return "shadow::" + locator;
+            }
+        };
+    }
