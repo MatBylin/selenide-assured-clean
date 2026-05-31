@@ -1190,3 +1190,58 @@ nc -zv your-es-host 9200
 echo "=== HTTP ==="
 curl -v --max-time 15 https://your-es-host:9200 \
      -H "Authorization: ApiKey $ES_API_KEY"
+
+
+
+
+
+// XPath locators do NOT work inside shadow DOM — use CSS selectors only.
+public abstract class BaseShadowComponent<T extends BaseShadowComponent<T>> extends BaseComponent<T> {
+
+    protected BaseShadowComponent(SelenideElement shadowHost) {
+        super(shadowHost);
+    }
+
+    protected SelenideElement getShadowRoot() {
+        return Selenide.$((WebElement) getRoot().getShadowRoot());
+    }
+
+    @Override
+    protected SelenideElement $(String cssSelector) {
+        return getShadowRoot().$(cssSelector);
+    }
+
+    @Override
+    protected ElementsCollection $$(String cssSelector) {
+        return getShadowRoot().$$(cssSelector);
+    }
+
+    @Override
+    protected SelenideElement $(By locator) {
+        return getShadowRoot().$(locator);
+    }
+
+    @Override
+    protected ElementsCollection $$(By locator) {
+        return getShadowRoot().$$(locator);
+    }
+}
+
+
+
+
+public class MyWebComponent extends BaseShadowComponent<MyWebComponent> {
+
+    // shadowHost is the <custom-element> that has a shadow root attached
+    public MyWebComponent(SelenideElement shadowHost) {
+        super(shadowHost);
+    }
+
+    public Text getLabel() {
+        return new Text($(".label"));       // resolves inside shadow root
+    }
+
+    public Button getSubmitButton() {
+        return new Button($("#submit-btn")); // resolves inside shadow root
+    }
+}
